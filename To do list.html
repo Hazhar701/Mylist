@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List App</title>
+    <style>
+        :root {
+            --primary-color: #4a89dc;
+            --secondary-color: #5d9cec;
+            --background-color: #f5f7fa;
+            --text-color: #333;
+            --card-color: #fff;
+            --border-color: #e6e9ed;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --input-bg: #fff;
+            --button-text: #fff;
+            --completed-color: #888;
+        }
+
+        .dark-mode {
+            --primary-color: #3b7dd8;
+            --secondary-color: #4a89dc;
+            --background-color: #1a1a1a;
+            --text-color: #f0f0f0;
+            --card-color: #2d2d2d;
+            --border-color: #444;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --input-bg: #333;
+            --button-text: #fff;
+            --completed-color: #666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            background: var(--primary-color);
+            color: var(--button-text);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--secondary-color);
+        }
+
+        .add-todo {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #todo-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        #add-btn {
+            background: var(--primary-color);
+            color: var(--button-text);
+            border: none;
+            padding: 0 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        #add-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .todo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .todo-item {
+            background: var(--card-color);
+            padding: 15px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .todo-content {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            gap: 10px;
+        }
+
+        .check-btn {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .check-btn.completed {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .todo-text {
+            flex: 1;
+            margin-right: 15px;
+            word-break: break-word;
+        }
+
+        .todo-text.completed {
+            text-decoration: line-through;
+            color: var(--completed-color);
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-top: 40px;
+            flex: 1;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px 0;
+            color: var(--text-color);
+            opacity: 0.7;
+            font-size: 14px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My To-Do List</h1>
+            <button class="theme-toggle" id="theme-toggle">
+                <span id="theme-icon">🌙</span>
+                <span id="theme-text">Dark Mode</span>
+            </button>
+        </header>
+
+        <div class="add-todo">
+            <input type="text" id="todo-input" placeholder="Add a new task...">
+            <button id="add-btn">Add</button>
+        </div>
+
+        <div class="todo-list" id="todo-list">
+            <!-- Todo items will be added here dynamically -->
+        </div>
+
+        <div class="empty-state" id="empty-state">
+            No tasks yet. Add one above!
+        </div>
+
+        <footer>
+            <div class="footer-content">
+                <span>To-Do List App</span>
+                <span>•</span>
+                <span id="footer-date">Created: 2023</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const todoInput = document.getElementById('todo-input');
+            const addBtn = document.getElementById('add-btn');
+            const todoList = document.getElementById('todo-list');
+            const emptyState = document.getElementById('empty-state');
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            const footerDate = document.getElementById('footer-date');
+
+            // Set current year in footer
+            footerDate.textContent = `Created: ${new Date().getFullYear()}`;
+
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light Mode';
+            }
+
+            // Theme toggle functionality
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                
+                if (document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                    themeIcon.textContent = '☀️';
+                    themeText.textContent = 'Light Mode';
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    themeIcon.textContent = '🌙';
+                    themeText.textContent = 'Dark Mode';
+                }
+            });
+
+            // Load todos from localStorage
+            let todos = JSON.parse(localStorage.getItem('todos')) || [];
+            renderTodos();
+
+            // Add todo
+            addBtn.addEventListener('click', addTodo);
+            todoInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addTodo();
+                }
+            });
+
+            function addTodo() {
+                const text = todoInput.value.trim();
+                if (text) {
+                    todos.push({
+                        id: Date.now(),
+                        text: text,
+                        completed: false
+                    });
+                    saveTodos();
+                    renderTodos();
+                    todoInput.value = '';
+                }
+            }
+
+            // Toggle todo completion
+            function toggleComplete(id) {
+                todos = todos.map(todo => {
+                    if (todo.id === id) {
+                        return {...todo, completed: !todo.completed};
+                    }
+                    return todo;
+                });
+                saveTodos();
+                renderTodos();
+            }
+
+            // Delete todo
+            function deleteTodo(id) {
+                todos = todos.filter(todo => todo.id !== id);
+                saveTodos();
+                renderTodos();
+            }
+
+            // Save todos to localStorage
+            function saveTodos() {
+                localStorage.setItem('todos', JSON.stringify(todos));
+            }
+
+            // Render todos
+            function renderTodos() {
+                if (todos.length === 0) {
+                    todoList.innerHTML = '';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                emptyState.style.display = 'none';
+                todoList.innerHTML = '';
+
+                todos.forEach(todo => {
+                    const todoItem = document.createElement('div');
+                    todoItem.className = 'todo-item';
+                    todoItem.innerHTML = `
+                        <div class="todo-content">
+                            <button class="check-btn ${todo.completed ? 'completed' : ''}" data-id="${todo.id}">
+                                ${todo.completed ? '✓' : ''}
+                            </button>
+                            <div class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</div>
+                        </div>
+                        <button class="delete-btn" data-id="${todo.id}">Delete</button>
+                    `;
+                    todoList.appendChild(todoItem);
+                });
+
+                // Add event listeners to check buttons
+                document.querySelectorAll('.check-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = parseInt(this.getAttribute('data-id'));
+                        toggleComplete(id);
+                    });
+                });
+
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = parseInt(this.getAttribute('data-id'));
+                        deleteTodo(id);
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
